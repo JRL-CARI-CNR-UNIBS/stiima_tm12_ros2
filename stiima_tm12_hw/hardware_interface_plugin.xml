@@ -1,0 +1,9 @@
+<library path="tm_robot_driver_plugin">
+  <class name="tm_robot_driver/TMPositionHardwareInterface"
+         type="tm_robot_driver::TMPositionHardwareInterface"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+		ROS2 Control System Driver for the TM12.
+    </description>
+  </class>
+</library>
