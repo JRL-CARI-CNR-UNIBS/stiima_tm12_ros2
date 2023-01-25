@@ -132,12 +132,12 @@ def launch_setup(context, *args, **kwargs):
     #     output="screen",
     # )
 
-    # cart_position_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=["my_cartesian_motion_controller", "-c", "/controller_manager"],
-    #     output="screen",
-    # )
+    cart_position_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["my_cartesian_motion_controller", "-c", "/controller_manager"],
+        output="screen",
+    )
 
     # There may be other controllers of the joints, but this is the initially-started one
     joint_trajectory_controller = Node(
@@ -149,12 +149,10 @@ def launch_setup(context, *args, **kwargs):
 
     nodes_to_start = [
         control_node,
-        # robot_state_publisher_node,
+        robot_state_publisher_node,
         joint_state_broadcaster_spawner,
-        joint_trajectory_controller,
-        # speed_scaling_state_broadcaster_spawner,
-        # force_torque_sensor_broadcaster_spawner,
-        # cart_position_controller_spawner,
+        # joint_trajectory_controller,
+        cart_position_controller_spawner,
         # forward_position_controller_spawner_stopped,
         # initial_joint_controller_spawner_stopped,
         # initial_joint_controller_spawner_started,
