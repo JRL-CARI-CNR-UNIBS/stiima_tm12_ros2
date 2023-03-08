@@ -43,6 +43,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "stiima_tm12_hw/hardware_interface.hpp"
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 
 namespace tm_robot_driver
@@ -129,6 +130,13 @@ TMPositionHardwareInterface::on_init(const hardware_interface::HardwareInfo& sys
     }
   }
 
+  #ifdef LOG_JOINTS
+  package_share_directory_ = ament_index_cpp::get_package_share_directory("stiima_tm12_hw");
+  RCLCPP_WARN(rclcpp::get_logger("TMPositionHardwareInterface"),"Creating log files in %s",package_share_directory_.c_str());
+  jnt_target_.open (package_share_directory_ + "/jnt_target_.txt");
+  jnt_actual_.open (package_share_directory_ + "/jnt_actual_.txt");
+  #endif
+  
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -307,6 +315,11 @@ TMPositionHardwareInterface::on_deactivate(const rclcpp_lifecycle::State& previo
   tm_svr_.reset();
   tm_driver_.reset();
 
+  #ifdef LOG_JOINTS
+  jnt_target_.close();
+  jnt_actual_.close();
+  #endif
+
   RCLCPP_INFO(rclcpp::get_logger("TMPositionHardwareInterface"), "System successfully stopped!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -324,7 +337,7 @@ hardware_interface::return_type TMPositionHardwareInterface::read(const rclcpp::
     std::vector<double> tmp_joint_velocities_ = tm_driver_->state.joint_speed();
     std::vector<double> tmp_joint_efforts_    = tm_driver_->state.joint_torque();
 
-  for (int i=0; i<tmp_joint_positions_.size(); i++) 
+  for (size_t i=0; i<tmp_joint_positions_.size(); i++) 
   {
     joint_positions_[i]  = tmp_joint_positions_[i]; 
     joint_velocities_[i] = tmp_joint_velocities_[i]; 
@@ -385,6 +398,17 @@ hardware_interface::return_type TMPositionHardwareInterface::read(const rclcpp::
 
     // updateNonDoubleValues();
 
+    #ifdef LOG_JOINTS
+      jnt_actual_ << time.nanoseconds() << " ";
+      for (size_t i=0; i<joint_positions_.size(); i++) 
+      {
+        jnt_actual_ << joint_positions_[i]  << " ";
+        jnt_actual_ << joint_velocities_[i] << " ";
+        jnt_actual_ << joint_efforts_[i]    << " ";
+      }
+      jnt_actual_ << "\n";
+    #endif
+
     return hardware_interface::return_type::OK;
   }
 
@@ -400,6 +424,7 @@ hardware_interface::return_type TMPositionHardwareInterface::write(const rclcpp:
   //     robot_program_running_ && (!non_blocking_read_ || packet_read_)) {
     if (position_controller_running_) {
       // std::vector<double> position_commands_fake_ = { { 0.1, 0.2, 0.3, -0.1, -0.2, -0.3 } };
+      // tm_driver_->set_joint_pos_PTP(position_commands_,2*M_PI,0.01,100,true);
       tm_driver_->set_joint_pos_PTP(position_commands_,2*M_PI,0.01,100,true);
 
     } else if (velocity_controller_running_) {
@@ -408,6 +433,15 @@ hardware_interface::return_type TMPositionHardwareInterface::write(const rclcpp:
     } else {
       RCLCPP_ERROR(rclcpp::get_logger("TMPositionHardwareInterface"), "No keepalive");
     }
+
+    #ifdef LOG_JOINTS
+      jnt_target_ << time.nanoseconds() << " ";
+      for (size_t i=0; i<position_commands_.size(); i++) 
+      {
+        jnt_target_ << position_commands_[i]  << " ";
+      }
+      jnt_target_ << "\n";
+    #endif
 
     packet_read_ = false;
   // }

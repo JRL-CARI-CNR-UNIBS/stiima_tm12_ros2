@@ -22,6 +22,9 @@
   <xacro:tmr_transmission prefix="$(arg prefix)" hw_iface="$(arg trans_hw_iface)" />
   <xacro:tmr_materials/>
 
+  <!-- ros2 control include -->
+  <xacro:include filename="$(find tm_description)/xacro/tm12.ros2_control.xacro" />
+  <xacro:tm12_ros2_control name="tm12" />
 
   <!-- Arm -->
   <xacro:property name="color" value="$(arg color)"/>

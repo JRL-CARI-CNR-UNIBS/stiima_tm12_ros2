@@ -1,116 +1,95 @@
-controller_manager:
-  ros__parameters:
-    update_rate: 15  # Hz
+omron:
+  controller_manager:
+    ros__parameters:
+      update_rate: 15  # Hz
 
-    joint_state_broadcaster:
-      type: joint_state_broadcaster/JointStateBroadcaster
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
 
-    # io_and_status_controller:
-      # type: ur_controllers/GPIOController
+      # io_and_status_controller:
+        # type: ur_controllers/GPIOController
 
-    # force_torque_sensor_broadcaster:
-      # type: force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster
+      # force_torque_sensor_broadcaster:
+        # type: force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster
 
-    joint_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
+      joint_trajectory_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
 
-    # forward_velocity_controller:
-      # type: velocity_controllers/JointGroupVelocityController
+      # my_cartesian_motion_controller:
+      #   type: "cartesian_motion_controller/CartesianMotionController"
+        
+      imm:
+        type: imm_controller/ImmController
 
-    # forward_position_controller:
-      # type: position_controllers/JointGroupPositionController
 
-    my_cartesian_motion_controller:
-      type: "cartesian_motion_controller/CartesianMotionController"
+omron:
+  joint_trajectory_controller:
+    ros__parameters:
+      joints:
+        - omron/joint_1
+        - omron/joint_2
+        - omron/joint_3
+        - omron/joint_4
+        - omron/joint_5
+        - omron/joint_6
+      command_interfaces:
+        - position
+      state_interfaces:
+        - position
+        # - velocity
+      state_publish_rate: 125.0
+      action_monitor_rate: 20.0
+      allow_partial_joints_goal: false
+      constraints:
+        stopped_velocity_tolerance: 0.1
+        goal_time: 0.0
+        joint_1: { trajectory: 10.1, goal: 0.1 }
+        joint_2: { trajectory: 10.1, goal: 0.1 }
+        joint_3: { trajectory: 10.1, goal: 0.1 }
+        joint_4: { trajectory: 10.1, goal: 0.1 }
+        joint_5: { trajectory: 10.1, goal: 0.1 }
+        joint_6: { trajectory: 10.1, goal: 0.1 }
 
-# force_torque_sensor_broadcaster:
+omron:
+  imm:
+    ros__parameters:
+      joints:
+        - omron/joint_1
+        - omron/joint_2
+        - omron/joint_3
+        - omron/joint_4
+        - omron/joint_5
+        - omron/joint_6
+      interface_name: velocity
+      # robot_chain_root: azrael/base_link
+      robot_chain_root: omron/base
+      robot_chain_tip:  omron/flange
+      amr_base_link:  omron/base_footprint
+
+# my_cartesian_motion_controller:
 #   ros__parameters:
-#     sensor_name: tcp_fts_sensor
-#     state_interface_names:
-#       - force.x
-#       - force.y
-#       - force.z
-#       - torque.x
-#       - torque.y
-#       - torque.z
-#     frame_id: tool0
-#     topic_name: ft_data
-
-
-joint_trajectory_controller:
-  ros__parameters:
-    joints:
-      - joint_1
-      - joint_2
-      - joint_3
-      - joint_4
-      - joint_5
-      - joint_6
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
-    state_publish_rate: 125.0
-    action_monitor_rate: 20.0
-    allow_partial_joints_goal: false
-    constraints:
-      stopped_velocity_tolerance: 0.1
-      goal_time: 0.0
-      joint_1: { trajectory: 10.1, goal: 0.1 }
-      joint_2: { trajectory: 10.1, goal: 0.1 }
-      joint_3: { trajectory: 10.1, goal: 0.1 }
-      joint_4: { trajectory: 10.1, goal: 0.1 }
-      joint_5: { trajectory: 10.1, goal: 0.1 }
-      joint_6: { trajectory: 10.1, goal: 0.1 }
-
-
-
-# forward_velocity_controller:
-#   ros__parameters:
+#     end_effector_link: "omron/flange"
+#     robot_base_link: "omron/base"
+#     target_frame_topic: "target_frame"
 #     joints:
-#       - shoulder_pan_joint
-#       - shoulder_lift_joint
-#       - elbow_joint
-#       - wrist_1_joint
-#       - wrist_2_joint
-#       - wrist_3_joint
-#     interface_name: velocity
-
-# forward_position_controller:
-#   ros__parameters:
-#     joints:
-#       - shoulder_pan_joint
-#       - shoulder_lift_joint
-#       - elbow_joint
-#       - wrist_1_joint
-#       - wrist_2_joint
-#       - wrist_3_joint
-
-my_cartesian_motion_controller:
-  ros__parameters:
-    end_effector_link: "flange"
-    robot_base_link: "base"
-    target_frame_topic: "target_frame"
-    joints:
-      - joint_1
-      - joint_2
-      - joint_3
-      - joint_4
-      - joint_5
-      - joint_6
+#         - omron/joint_1
+#         - omron/joint_2
+#         - omron/joint_3
+#         - omron/joint_4
+#         - omron/joint_5
+#         - omron/joint_6
     
-    command_interfaces:
-      - position
+#     command_interfaces:
+#       - position
 
-    solver:
-      error_scale: 2.0
-      iterations: 25
+#     solver:
+#       error_scale: 2.0
+#       iterations: 25
 
-    pd_gains:
-        trans_x: {p: 1.2} #,d: 0.0001}
-        trans_y: {p: 1.2} #,d: 0.0001}
-        trans_z: {p: 1.2} #,d: 0.0001}
-        rot_x:   {p: 0.5} #,d: 0.0005}
-        rot_y:   {p: 0.5} #,d: 0.0005}
-        rot_z:   {p: 0.5} #,d: 0.0005}
+#     pd_gains:
+#         trans_x: {p: 1.2} #,d: 0.0001}
+#         trans_y: {p: 1.2} #,d: 0.0001}
+#         trans_z: {p: 1.2} #,d: 0.0001}
+#         rot_x:   {p: 0.5} #,d: 0.0005}
+#         rot_y:   {p: 0.5} #,d: 0.0005}
+#         rot_z:   {p: 0.5} #,d: 0.0005}

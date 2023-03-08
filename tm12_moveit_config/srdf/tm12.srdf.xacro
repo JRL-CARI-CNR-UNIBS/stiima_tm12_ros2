@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <!-- robot name parameter -->
+  <!-- <xacro:arg name="name" default="tm12"/> -->
+  <!-- parameters -->
+
+  <xacro:include filename="$(find tm12_moveit_config)/srdf/tm12_macro.srdf.xacro"/>
+
+  <xacro:tm12 />
+
+</robot>

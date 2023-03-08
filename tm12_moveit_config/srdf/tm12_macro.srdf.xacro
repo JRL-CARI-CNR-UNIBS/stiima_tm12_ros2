@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+<xacro:macro name="tm12">
+    <group name="tm12">
+        <joint name="omron/joint_1"/>
+        <joint name="omron/joint_2"/>
+        <joint name="omron/joint_3"/>
+        <joint name="omron/joint_4"/>
+        <joint name="omron/joint_5"/>
+        <joint name="omron/joint_6"/>
+    </group>
+    <group_state name="home" group="tm12">
+        <joint name="omron/joint_1" value="0"/>
+        <joint name="omron/joint_2" value="0"/>
+        <joint name="omron/joint_3" value="0"/>
+        <joint name="omron/joint_4" value="0"/>
+        <joint name="omron/joint_5" value="0"/>
+        <joint name="omron/joint_6" value="0"/>
+    </group_state>
+    <group_state name="forward" group="tm12">
+        <joint name="omron/joint_1" value="0"/>
+        <joint name="omron/joint_2" value="-0.0521"/>
+        <joint name="omron/joint_3" value="1.5526"/>
+        <joint name="omron/joint_4" value="0"/>
+        <joint name="omron/joint_5" value="0"/>
+        <joint name="omron/joint_6" value="0"/>
+    </group_state>
+    <disable_collisions link1="omron/base_link_omron" link2="omron/link_0" reason="Adjacent"/>
+    <disable_collisions link1="omron/base_link_omron" link2="omron/link_1" reason="Never"/>
+    <disable_collisions link1="omron/link_0" link2="omron/link_1" reason="Adjacent"/>
+    <disable_collisions link1="omron/link_0" link2="omron/link_2" reason="Never"/>
+    <disable_collisions link1="omron/link_0" link2="omron/link_4" reason="Never"/>
+    <disable_collisions link1="omron/link_1" link2="omron/link_2" reason="Adjacent"/>
+    <disable_collisions link1="omron/link_1" link2="omron/link_4" reason="Never"/>
+    <disable_collisions link1="omron/link_1" link2="omron/link_5" reason="Never"/>
+    <disable_collisions link1="omron/link_2" link2="omron/link_3" reason="Adjacent"/>
+    <disable_collisions link1="omron/link_3" link2="omron/link_4" reason="Adjacent"/>
+    <disable_collisions link1="omron/link_4" link2="omron/link_5" reason="Adjacent"/>
+    <disable_collisions link1="omron/link_5" link2="omron/link_6" reason="Adjacent"/>
+  </xacro:macro>
+</robot>

@@ -15,8 +15,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  message("${PROJECT_NAME}: You did not request a specific build type: selecting 'Release'.")
+  set(CMAKE_BUILD_TYPE Release)
+elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
+  add_compile_definitions(LOG_JOINTS)
+  message("${PROJECT_NAME}: Debug build, logging all info in share directory.")
+endif()
+
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(controller_manager_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -67,6 +77,7 @@ src/tm_ethernet_slave_connect.cpp
 
 ament_target_dependencies(tm_robot_driver_plugin
 rclcpp
+ament_index_cpp
 rclcpp_lifecycle
 controller_manager
 controller_manager_msgs

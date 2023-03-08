@@ -58,7 +58,7 @@ def launch_setup(context, *args, **kwargs):
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution([FindPackageShare("tm_description"), "xacro", description_file])
+            PathJoinSubstitution([FindPackageShare("omron_app"), "urdf", description_file])
         ]
     )
 
@@ -82,23 +82,25 @@ def launch_setup(context, *args, **kwargs):
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
+        namespace='omron',
         # parameters=[robot_description, update_rate_config_file, initial_joint_controllers],
         parameters=[robot_description, initial_joint_controllers],
         output="screen",
     )
 
 
-    robot_state_publisher_node = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        output="screen",
-        parameters=[robot_description],
-    )
+    # robot_state_publisher_node = Node(
+    #     package="robot_state_publisher",
+    #     executable="robot_state_publisher",
+    #     output="screen",
+    #     parameters=[robot_description],
+    # )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        namespace='omron',
+        arguments=["joint_state_broadcaster", "--controller-manager", "/omron/controller_manager"],
         output="screen",
     )
 
@@ -135,7 +137,7 @@ def launch_setup(context, *args, **kwargs):
     cart_position_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["my_cartesian_motion_controller", "-c", "/controller_manager"],
+        arguments=["my_cartesian_motion_controller", "-c", "omron/controller_manager"],
         output="screen",
     )
 
@@ -143,16 +145,24 @@ def launch_setup(context, *args, **kwargs):
     joint_trajectory_controller = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_trajectory_controller", "-c", "/controller_manager"],
+        namespace='omron',
+        arguments=["joint_trajectory_controller", "-c", "/omron/controller_manager"],
     )
 
+    imm_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        namespace='omron',
+        arguments=["imm", "-c", "/omron/controller_manager"],
+    )
 
     nodes_to_start = [
         control_node,
-        robot_state_publisher_node,
+        # robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         # joint_trajectory_controller,
-        cart_position_controller_spawner,
+        imm_controller,
+        # cart_position_controller_spawner,
         # forward_position_controller_spawner_stopped,
         # initial_joint_controller_spawner_stopped,
         # initial_joint_controller_spawner_started,
@@ -182,7 +192,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file",
-            default_value="tm12x.urdf.xacro",
+            default_value="system.urdf.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )

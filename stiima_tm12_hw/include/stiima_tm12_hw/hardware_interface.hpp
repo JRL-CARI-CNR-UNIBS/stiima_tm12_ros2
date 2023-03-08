@@ -42,6 +42,8 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include <iostream>
+#include <fstream>
 
 // ros2_control hardware_interface
 #include "hardware_interface/hardware_info.hpp"
@@ -85,7 +87,7 @@ enum StoppingInterface
 class TMPositionHardwareInterface : public hardware_interface::SystemInterface
 {
 public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(TMPositionHardwareInterface);
+  RCLCPP_SHARED_PTR_DEFINITIONS(TMPositionHardwareInterface)
 
   hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& system_info) final;
 
@@ -133,6 +135,12 @@ protected:
   std::vector<double>    position_commands_ = { { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } };
   std::vector<double>    position_commands_old_ = { { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } };
   std::vector<double>    velocity_commands_ = { { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } };
+
+  #ifdef LOG_JOINTS
+  std::string package_share_directory_;
+  std::ofstream jnt_target_;
+  std::ofstream jnt_actual_;
+  #endif
 
   bool packet_read_;
 
