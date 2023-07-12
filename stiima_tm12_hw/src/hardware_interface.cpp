@@ -425,7 +425,7 @@ hardware_interface::return_type TMPositionHardwareInterface::write(const rclcpp:
     if (position_controller_running_) {
       // std::vector<double> position_commands_fake_ = { { 0.1, 0.2, 0.3, -0.1, -0.2, -0.3 } };
       // tm_driver_->set_joint_pos_PTP(position_commands_,2*M_PI,0.01,100,true);
-      tm_driver_->set_joint_pos_PTP(position_commands_,2*M_PI,0.01,100,true);
+      tm_driver_->set_joint_pos_PTP(position_commands_,0.3*M_PI,0.02,90,true);
 
     } else if (velocity_controller_running_) {
       RCLCPP_ERROR(rclcpp::get_logger("TMPositionHardwareInterface"), "No velocity control implemented yet");

@@ -1,7 +1,7 @@
 omron:
   controller_manager:
     ros__parameters:
-      update_rate: 15  # Hz
+      update_rate: 10  # Hz
 
       joint_state_broadcaster:
         type: joint_state_broadcaster/JointStateBroadcaster
@@ -53,6 +53,13 @@ omron:
 omron:
   imm:
     ros__parameters:
+      command_joints:
+        - omron/joint_1
+        - omron/joint_2
+        - omron/joint_3
+        - omron/joint_4
+        - omron/joint_5
+        - omron/joint_6
       joints:
         - omron/joint_1
         - omron/joint_2
@@ -60,11 +67,18 @@ omron:
         - omron/joint_4
         - omron/joint_5
         - omron/joint_6
-      interface_name: velocity
-      # robot_chain_root: azrael/base_link
+      control_interface:
+      - position
+      state_interface:
+      - position
+      - velocity
       robot_chain_root: omron/base
       robot_chain_tip:  omron/flange
-      amr_base_link:  omron/base_footprint
+      amr_base_link:  omron/base_link
+      cmd_vel_topic: /omron/cmd_vel
+      robot_description_topic: /omron/robot_description
+      only_robot: true
+      omni: false
 
 # my_cartesian_motion_controller:
 #   ros__parameters:

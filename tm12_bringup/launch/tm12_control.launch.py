@@ -89,12 +89,13 @@ def launch_setup(context, *args, **kwargs):
     )
 
 
-    # robot_state_publisher_node = Node(
-    #     package="robot_state_publisher",
-    #     executable="robot_state_publisher",
-    #     output="screen",
-    #     parameters=[robot_description],
-    # )
+    robot_state_publisher_node = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        namespace='omron',
+        output="screen",
+        parameters=[robot_description],
+    )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
@@ -158,7 +159,7 @@ def launch_setup(context, *args, **kwargs):
 
     nodes_to_start = [
         control_node,
-        # robot_state_publisher_node,
+        robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         # joint_trajectory_controller,
         imm_controller,

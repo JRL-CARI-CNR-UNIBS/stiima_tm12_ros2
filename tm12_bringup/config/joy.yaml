@@ -5,14 +5,16 @@ teleop_twist_joy_node:
       y: 1
       z: 7
     scale_linear:
-      x: 0.1
-      y: 0.1
-      z: 0.1
+      x: 0.2
+      y: 0.2
+      z: 0.2
     axis_angular:
       roll: 3
       yaw: 4
+      pitch: 6
     scale_angular:
-      roll: 0.1
-      yaw: 0.1
+      roll: 0.2
+      yaw: 0.2
+      pitch: 0.2
     enable_button: 5
     enable_turbo_button: 8
