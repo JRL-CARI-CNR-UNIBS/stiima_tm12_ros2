@@ -24,7 +24,7 @@
 
   <!-- ros2 control include -->
   <xacro:include filename="$(find tm_description)/xacro/tm12.ros2_control.xacro" />
-  <xacro:tm12_ros2_control name="tm12" />
+  <xacro:tm12_ros2_control name="tm12" prefix=""/>
 
   <!-- Arm -->
   <xacro:property name="color" value="$(arg color)"/>
