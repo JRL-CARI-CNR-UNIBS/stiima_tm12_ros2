@@ -283,12 +283,18 @@ TMPositionHardwareInterface::on_activate(const rclcpp_lifecycle::State& previous
 
   // The robot's IP address.
   std::string robot_ip = info_.hardware_parameters["robot_ip"];
+  if(robot_ip.empty())
+  {
+    robot_ip = "169.254.49.101";
+    RCLCPP_WARN(rclcpp::get_logger("TMPositionHardwareInterface"), "No IP found. Using default: %s", robot_ip.c_str());
+  }
+  // const std::string host = "169.254.49.101";
 
   RCLCPP_INFO(rclcpp::get_logger("TMPositionHardwareInterface"), "Initializing driver...");
 
-  std::string host = "169.254.49.101";
+  
 
-  tm_driver_  = std::make_unique<TmDriver>(host, nullptr, nullptr);
+  tm_driver_  = std::make_unique<TmDriver>(robot_ip, nullptr, nullptr);
   tm_svr_     = std::make_unique<TmSvrRos2>(*tm_driver_);
   tm_sct_     = std::make_unique<TmSctRos2>(*tm_driver_);
   
@@ -431,7 +437,7 @@ hardware_interface::return_type TMPositionHardwareInterface::write(const rclcpp:
       RCLCPP_ERROR(rclcpp::get_logger("TMPositionHardwareInterface"), "No velocity control implemented yet");
 
     } else {
-      RCLCPP_ERROR(rclcpp::get_logger("TMPositionHardwareInterface"), "No keepalive");
+      RCLCPP_ERROR_ONCE(rclcpp::get_logger("TMPositionHardwareInterface"), "No keepalive");
     }
 
     #ifdef LOG_JOINTS
