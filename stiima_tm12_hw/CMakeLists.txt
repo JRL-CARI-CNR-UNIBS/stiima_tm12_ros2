@@ -73,6 +73,7 @@ src/tm_print.cpp
 src/tm_driver_utilities.cpp
 src/tm_listen_node_connect.cpp
 src/tm_ethernet_slave_connect.cpp
+src/tm_ros2_moveit.cpp
 )
 
 ament_target_dependencies(tm_robot_driver_plugin
@@ -92,10 +93,13 @@ tm_msgs
 
 pluginlib_export_plugin_description_file(hardware_interface hardware_interface_plugin.xml)
 
+add_executable(tm_moveit_standalone src/tm_ros2_moveit_main.cpp)
+target_link_libraries(tm_moveit_standalone tm_robot_driver_plugin)
 
 install(TARGETS
   tm_robot_driver_plugin
-  DESTINATION lib
+  tm_moveit_standalone
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()
