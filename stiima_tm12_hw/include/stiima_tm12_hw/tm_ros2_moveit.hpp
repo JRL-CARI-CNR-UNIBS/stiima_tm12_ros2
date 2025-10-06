@@ -46,18 +46,18 @@ class TmRos2SctMoveit : public TmSctRos2{
      , sct_(iface.sct)
      , svr_(iface.svr)
      , state_(iface.state){
-        intial_action();
-        this->declare_parameter("joints", 
-                                std::vector<std::string>({"joint_1", 
-                                                          "joint_2", 
-                                                          "joint_3", 
-                                                          "joint_4", 
-                                                          "joint_5", 
-                                                          "joint_6"}));
+      this->declare_parameter("joints", 
+      std::vector<std::string>({"joint_1", 
+        "joint_2", 
+        "joint_3", 
+        "joint_4", 
+        "joint_5", 
+        "joint_6"}));
         this->declare_parameter("action_name", 
-                                std::string("tmr_arm_controller/follow_joint_trajectory"));
-        this->get_parameter("action_name", action_name_);
-        this->get_parameter("joints", joints_);
+          std::string("tmr_arm_controller/follow_joint_trajectory"));
+          this->get_parameter("action_name", action_name_);
+          this->get_parameter("joints", joints_);
+      intial_action();
     }
 
 };
