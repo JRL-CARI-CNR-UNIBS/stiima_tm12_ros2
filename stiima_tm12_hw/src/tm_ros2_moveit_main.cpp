@@ -1,4 +1,4 @@
-#include "stiima_tm12_hw/tm_ros2_moveit_sct.hpp"
+#include "stiima_tm12_hw/tm_ros2_moveit.hpp"
 #include "rclcpp/rclcpp.hpp"
 int main(int argc, char** argv)
 {

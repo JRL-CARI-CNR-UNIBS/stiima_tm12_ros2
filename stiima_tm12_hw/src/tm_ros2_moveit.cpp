@@ -1,4 +1,4 @@
-#include "stiima_tm12_hw/tm_ros2_moveit_sct.hpp"
+#include "stiima_tm12_hw/tm_ros2_moveit.hpp"
 
 void TmRos2SctMoveit::intial_action(){
     as_ = rclcpp_action::create_server<control_msgs::action::FollowJointTrajectory>(
