@@ -23,24 +23,29 @@ rclcpp_action::GoalResponse TmRos2SctMoveit::handle_goal(const rclcpp_action::Go
   //RCLCPP_INFO_STREAM(node->get_logger(), "Received new action goal " << goal_id);
 
   if (has_goal_) {
+    RCLCPP_WARN(this->get_logger(), "Already have a goal, rejecting new goal");
     return rclcpp_action::GoalResponse::ACCEPT_AND_DEFER;
   }
 
   if (!svr_.is_connected()) {
+    RCLCPP_WARN(this->get_logger(), "Not connected to robot, rejecting goal");
     return rclcpp_action::GoalResponse::REJECT;
   }
   if (!sct_.is_connected()) {
+    RCLCPP_WARN(this->get_logger(), "Not connected to motion controller, rejecting goal");
     return rclcpp_action::GoalResponse::REJECT;
   }
   if (state_.has_error()) {
+    RCLCPP_WARN(this->get_logger(), "Robot in error state, rejecting goal");
     return rclcpp_action::GoalResponse::REJECT;
   }
 
   if (!has_points(goal->trajectory)) {
+    RCLCPP_WARN(this->get_logger(), "Trajectory has no points, rejecting goal");
     return rclcpp_action::GoalResponse::REJECT;
   }
   //for (auto &jn : goal->trajectory.joint_names) { tmr_DEBUG_STREAM(jn); }
-
+  
   return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 }
 rclcpp_action::CancelResponse TmRos2SctMoveit::handle_cancel(
