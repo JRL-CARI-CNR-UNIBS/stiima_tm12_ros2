@@ -1,4 +1,5 @@
 #include "stiima_tm12_hw/tm_ros2_moveit.hpp"
+#include "stiima_tm12_hw/tm_ros2_svr.h"
 #include "rclcpp/rclcpp.hpp"
 int main(int argc, char** argv)
 {
@@ -28,10 +29,18 @@ int main(int argc, char** argv)
   }
 
   auto tm_driver  = std::make_unique<TmDriver>(robot_ip, nullptr, nullptr);
+   
+  auto tm_svr = std::make_shared<TmSvrRos2>(*tm_driver, true);
 
   auto node_moveit_driver_interface = std::make_shared<TmRos2SctMoveit>(*tm_driver, action_name, joints);
 
-  rclcpp::spin(node_moveit_driver_interface);
+  rclcpp::executors::MultiThreadedExecutor executor;
+  executor.add_node(node);
+  executor.add_node(tm_svr);
+  executor.add_node(node_moveit_driver_interface);
+  tm_driver->set_tag(1, 0);
+
+  executor.spin();
   rclcpp::shutdown();
   return 0;
 }

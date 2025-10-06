@@ -57,6 +57,8 @@ public:
     ~TmSvrRos2();
 
 protected:
+    rclcpp::TimerBase::SharedPtr update_js_timer;
+
     void publish_svr();
     bool get_data_function();
     void publisher();
@@ -65,6 +67,7 @@ protected:
     void cq_monitor();//Connection quality
     void cq_manage();
     bool rc_halt();//Stop rescue connection
+    void update_joint_states();
 
 public:
     bool connect_tmsvr(

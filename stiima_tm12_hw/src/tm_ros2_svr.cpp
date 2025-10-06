@@ -24,6 +24,8 @@ TmSvrRos2::TmSvrRos2(TmDriver &iface, bool stick_play)
 
     ethernetSlaveConnection = std::make_unique<EthernetSlaveConnection>
     (iface,std::bind(&TmSvrRos2::publish_svr, this),stick_play);
+    
+    update_js_timer = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&TmSvrRos2::update_joint_states, this));
 
     connect_tm_srv_ = this->create_service<tm_msgs::srv::ConnectTM>(
         "connect_tmsvr", std::bind(&TmSvrRos2::connect_tmsvr, this,
@@ -133,4 +135,10 @@ bool TmSvrRos2::ask_item(
     }
     res->ok = rb;
     return rb;
+}
+
+void
+TmSvrRos2::update_joint_states()
+{
+    state_.update_tm_robot_publish_state();
 }
