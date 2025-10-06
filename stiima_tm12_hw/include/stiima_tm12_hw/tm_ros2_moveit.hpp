@@ -14,7 +14,8 @@ class TmRos2SctMoveit : public TmSctRos2{
     TmSctCommunication &sct_;
     TmSvrCommunication &svr_;
     TmRobotState &state_;
-
+    std::string action_name_;
+    
     void intial_action();
     rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID & uuid,
       std::shared_ptr<const control_msgs::action::FollowJointTrajectory::Goal> goal);
@@ -53,7 +54,9 @@ class TmRos2SctMoveit : public TmSctRos2{
                                                           "joint_4", 
                                                           "joint_5", 
                                                           "joint_6"}));
-  
+        this->declare_parameter("action_name", 
+                                std::string("tmr_arm_controller/follow_joint_trajectory"));
+        this->get_parameter("action_name", action_name_);
         this->get_parameter("joints", joints_);
     }
 

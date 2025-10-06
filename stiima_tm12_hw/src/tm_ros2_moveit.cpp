@@ -2,12 +2,11 @@
 
 void TmRos2SctMoveit::intial_action(){
     as_ = rclcpp_action::create_server<control_msgs::action::FollowJointTrajectory>(
-    //  node->get_node_base_interface(),
-    //  node->get_node_clock_interface(),
-    //  node->get_node_logging_interface(),
-    //  node->get_node_waitables_interface(),
-    shared_from_this(),
-     "tmr_arm_controller/follow_joint_trajectory",
+     this->get_node_base_interface(),
+     this->get_node_clock_interface(),
+     this->get_node_logging_interface(),
+     this->get_node_waitables_interface(),
+     action_name_,
      std::bind(&TmRos2SctMoveit::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
      std::bind(&TmRos2SctMoveit::handle_cancel, this, std::placeholders::_1),
      std::bind(&TmRos2SctMoveit::handle_accepted, this, std::placeholders::_1)

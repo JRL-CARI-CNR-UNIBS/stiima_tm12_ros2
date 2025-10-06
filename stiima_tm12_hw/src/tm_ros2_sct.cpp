@@ -1,7 +1,7 @@
 #include "stiima_tm12_hw/tm_ros2_sct.h"
 
 TmSctRos2::TmSctRos2(TmDriver &iface)
-    : Node("TmSctRos2")
+    : Node("TmSctRos2", rclcpp::NodeOptions().use_global_arguments(false))
     , iface_(iface)
 {
     

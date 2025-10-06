@@ -20,11 +20,18 @@ int main(int argc, char** argv)
   if(!node->get_parameter("joints", joints)) {
     RCLCPP_WARN(node->get_logger(), "Failed to get joints parameter, using default.");
   }
+  std::string action_name;
+  node->declare_parameter("action_name", 
+                          std::string("tmr_arm_controller/follow_joint_trajectory"));
+  if(!node->get_parameter("action_name", action_name)) {
+    RCLCPP_WARN(node->get_logger(), "Failed to get action_name parameter, using default.");
+  }
 
   auto tm_driver  = std::make_unique<TmDriver>(robot_ip, nullptr, nullptr);
 
   auto node_moveit_driver_interface = std::make_shared<TmRos2SctMoveit>(*tm_driver);
   node_moveit_driver_interface->set_parameter(rclcpp::Parameter("joints", joints));
+  node_moveit_driver_interface->set_parameter(rclcpp::Parameter("action_name", action_name));
   rclcpp::spin(node_moveit_driver_interface);
   rclcpp::shutdown();
   return 0;
