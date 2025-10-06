@@ -41,22 +41,24 @@ class TmRos2SctMoveit : public TmSctRos2{
 
         
   public:
-    TmRos2SctMoveit(TmDriver &iface) 
+    TmRos2SctMoveit(TmDriver &iface, 
+      std::string action_name = "tmr_arm_controller/follow_joint_trajectory", 
+      std::vector<std::string> joints = std::vector<std::string>({"joint_1", 
+        "joint_2", 
+        "joint_3", 
+        "joint_4", 
+        "joint_5", 
+        "joint_6"}))
      : TmSctRos2(iface)
      , sct_(iface.sct)
      , svr_(iface.svr)
      , state_(iface.state){
       this->declare_parameter("joints", 
-      std::vector<std::string>({"joint_1", 
-        "joint_2", 
-        "joint_3", 
-        "joint_4", 
-        "joint_5", 
-        "joint_6"}));
+        joints);
         this->declare_parameter("action_name", 
-          std::string("tmr_arm_controller/follow_joint_trajectory"));
-          this->get_parameter("action_name", action_name_);
-          this->get_parameter("joints", joints_);
+          action_name);
+        this->get_parameter("action_name", action_name_);
+        this->get_parameter("joints", joints_);
       intial_action();
     }
 

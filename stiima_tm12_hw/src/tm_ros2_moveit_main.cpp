@@ -29,9 +29,8 @@ int main(int argc, char** argv)
 
   auto tm_driver  = std::make_unique<TmDriver>(robot_ip, nullptr, nullptr);
 
-  auto node_moveit_driver_interface = std::make_shared<TmRos2SctMoveit>(*tm_driver);
-  node_moveit_driver_interface->set_parameter(rclcpp::Parameter("joints", joints));
-  node_moveit_driver_interface->set_parameter(rclcpp::Parameter("action_name", action_name));
+  auto node_moveit_driver_interface = std::make_shared<TmRos2SctMoveit>(*tm_driver, action_name, joints);
+
   rclcpp::spin(node_moveit_driver_interface);
   rclcpp::shutdown();
   return 0;
