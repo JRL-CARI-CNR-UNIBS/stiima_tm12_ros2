@@ -2,20 +2,15 @@
 #include<iostream>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-TmSvrRos2::TmSvrRos2(TmDriver &iface, bool stick_play)
+TmSvrRos2::TmSvrRos2(TmDriver &iface, bool stick_play, bool pub_joint_states, std::vector<std::string> joints)
     : Node("TmSvrRos2")
     , svr_(iface.svr)
     , state_(iface.state)
     , sct_(iface.sct)
     , iface_(iface)
+    , pub_joint_states_(pub_joint_states)
+    , jns_(joints)
 {
-    jns_.clear();
-    jns_.push_back("joint_1");
-    jns_.push_back("joint_2");
-    jns_.push_back("joint_3");
-    jns_.push_back("joint_4");
-    jns_.push_back("joint_5");
-    jns_.push_back("joint_6");
 
 
     pm_.svr_pub = this->create_publisher<tm_msgs::msg::SvrResponse>("svr_response", 1);
@@ -26,7 +21,7 @@ TmSvrRos2::TmSvrRos2(TmDriver &iface, bool stick_play)
     (iface,std::bind(&TmSvrRos2::publish_svr, this),stick_play);
     
     update_js_timer = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&TmSvrRos2::update_joint_states, this));
-
+    joint_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("joint_states", 1);
     connect_tm_srv_ = this->create_service<tm_msgs::srv::ConnectTM>(
         "connect_tmsvr", std::bind(&TmSvrRos2::connect_tmsvr, this,
         std::placeholders::_1, std::placeholders::_2));
@@ -141,4 +136,17 @@ void
 TmSvrRos2::update_joint_states()
 {
     state_.update_tm_robot_publish_state();
+
+    if(pub_joint_states_ == false) return;
+    auto q_act = state_.joint_angle();
+    auto dq_act = state_.joint_speed();
+    auto tau_act = state_.joint_torque();
+    sensor_msgs::msg::JointState joint_state;
+    joint_state.header.stamp = this->now();
+    joint_state.name = jns_;
+    joint_state.position = q_act;
+    joint_state.velocity = dq_act;
+    joint_state.effort = tau_act;
+
+    joint_pub_->publish(joint_state);
 }

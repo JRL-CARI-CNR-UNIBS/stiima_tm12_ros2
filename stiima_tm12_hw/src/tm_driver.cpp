@@ -177,6 +177,7 @@ bool TmDriver::set_pvt_traj(const TmPvtTraj &pvts, const std::string &id)
 	std::string script = TmCommand::set_pvt_traj(pvts);
 	print_info("TM_DRV: send script (pvt traj.):\n");
 	print_info("%s\n", script.c_str());
+	print_info("TM_DRV: end of script\n");
 	return (sct.send_script_str(id, script) == RC_OK);
 }
 

@@ -36,7 +36,8 @@ class TmRos2SctMoveit : public TmSctRos2{
       TmPvtTraj &pvts, const std::vector<trajectory_msgs::msg::JointTrajectoryPoint> &traj_points, double Tmin);
       std::shared_ptr<TmPvtTraj> get_pvt_traj(
     const std::vector<trajectory_msgs::msg::JointTrajectoryPoint> &traj_points, double Tmin = 0.1);
-  
+    trajectory_msgs::msg::JointTrajectoryPoint get_current_joint_point();
+    
     std::vector<std::string> joints_;
 
         

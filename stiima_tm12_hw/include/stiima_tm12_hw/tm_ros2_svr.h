@@ -51,9 +51,20 @@ public:
     rclcpp::Service<tm_msgs::srv::WriteItem>::SharedPtr write_item_srv_;
     rclcpp::Service<tm_msgs::srv::AskItem>::SharedPtr ask_item_srv_;
     std::vector<std::string> jns_;
+    rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_pub_;
+
 
 public:
-    explicit TmSvrRos2(TmDriver &iface, bool stick_play = false);
+    explicit TmSvrRos2(TmDriver &iface, 
+                        bool stick_play = false, 
+                        bool pub_joint_states = false, 
+                        std::vector<std::string> joints = std::vector<std::string>({"joint_1", 
+                                                                                    "joint_2", 
+                                                                                    "joint_3", 
+                                                                                    "joint_4", 
+                                                                                    "joint_5", 
+                                                                                    "joint_6"})
+                        );
     ~TmSvrRos2();
 
 protected:
@@ -68,6 +79,8 @@ protected:
     void cq_manage();
     bool rc_halt();//Stop rescue connection
     void update_joint_states();
+    bool pub_joint_states_;
+
 
 public:
     bool connect_tmsvr(

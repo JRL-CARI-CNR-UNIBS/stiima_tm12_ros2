@@ -27,10 +27,15 @@ int main(int argc, char** argv)
   if(!node->get_parameter("action_name", action_name)) {
     RCLCPP_WARN(node->get_logger(), "Failed to get action_name parameter, using default.");
   }
+  node->declare_parameter("pub_joint_states", false);
+  bool pub_joint_states = false;
+  if(!node->get_parameter("pub_joint_states", pub_joint_states)) {
+    RCLCPP_WARN(node->get_logger(), "Failed to get pub_joint_states parameter, using default.");
+  }
 
   auto tm_driver  = std::make_unique<TmDriver>(robot_ip, nullptr, nullptr);
-   
-  auto tm_svr = std::make_shared<TmSvrRos2>(*tm_driver, true);
+
+  auto tm_svr = std::make_shared<TmSvrRos2>(*tm_driver, true, pub_joint_states, joints);
 
   auto node_moveit_driver_interface = std::make_shared<TmRos2SctMoveit>(*tm_driver, action_name, joints);
 

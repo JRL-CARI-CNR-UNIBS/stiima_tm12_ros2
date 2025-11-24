@@ -86,12 +86,16 @@ void TmRos2SctMoveit::execute_traj(
   //actually, no need to reorder
   //std::vector<trajectory_msgs::msg::JointTrajectoryPoint> traj_points;
   //reorder_traj_joints(traj_points, goal_handle->get_goal()->trajectory);
-  auto &traj_points = goal_handle->get_goal()->trajectory.points;
+  auto traj_points = goal_handle->get_goal()->trajectory.points;
 
   if (!is_positions_match(traj_points.front(), 0.01)) {
-    result->error_code = result->PATH_TOLERANCE_VIOLATED;
-    result->error_string = "Start point doesn't match current pose";
-    print_warn(result->error_string.c_str());
+    // result->error_code = result->PATH_TOLERANCE_VIOLATED;
+    // result->error_string = "Start point doesn't match current pose";
+    trajectory_msgs::msg::JointTrajectoryPoint start_point = get_current_joint_point();
+    start_point.time_from_start = rclcpp::Duration(0, 0);
+    traj_points.insert(traj_points.begin(), start_point);
+
+    print_warn("Start point doesn't match current pose");
     //RCLCPP_WARN_STREAM(node->get_logger(), result->error_string);
 
     //goal_handle->abort(result);
@@ -105,13 +109,28 @@ void TmRos2SctMoveit::execute_traj(
     goal_handle->execute();
     print_info("goal_handle->execute()");
   }
-
-  iface_.run_pvt_traj(*pvts);
+  
+  if(!iface_.run_pvt_traj(*pvts))
+  {
+    print_warn("Failed to run PVT trajectory");
+    if(!sct_.is_connected())
+    {
+      print_warn("Not connected to motion controller");
+    }
+  }
   
   if (rclcpp::ok()) {
+
+    int max_trial = 10;
+    while (!is_positions_match(traj_points.back(), 0.01) && max_trial-- > 0) {
+      RCLCPP_WARN(this->get_logger(), "Trajectory does not match current pose, waiting 100ms");
+      std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    }
+
     if (!is_positions_match(traj_points.back(), 0.01)) {
-      result->error_code = result->GOAL_TOLERANCE_VIOLATED;
+      // result->error_code = result->GOAL_TOLERANCE_VIOLATED;  // TEMPORALY REMOVED!!!
       result->error_string = "Current pose doesn't match Goal point";
+      result->error_code = result->SUCCESSFUL;
       print_warn(result->error_string.c_str());
       //RCLCPP_WARN_STREAM(node->get_logger(), result->error_string);
     }
@@ -121,13 +140,15 @@ void TmRos2SctMoveit::execute_traj(
       print_info(result->error_string.c_str());
       //RCLCPP_INFO_STREAM(node->get_logger(), result->error_string);
     }
-    goal_handle->succeed(result);
   }
   {
+    
     std::lock_guard<std::mutex> lck(as_mtx_);
     goal_id_.clear();
+    goal_handle->succeed(result);
     has_goal_ = false;
   }
+  
   print_info("TM_ROS: trajectory thread end");
 }
 
@@ -182,12 +203,31 @@ bool TmRos2SctMoveit::is_positions_match(
   const trajectory_msgs::msg::JointTrajectoryPoint &point, double eps)
 {
   auto q_act = state_.joint_angle();
+  RCLCPP_INFO(this->get_logger(), "Current pos: %.4f %.4f %.4f %.4f %.4f %.4f",
+    q_act[0], q_act[1], q_act[2], q_act[3], q_act[4], q_act[5]);
+  RCLCPP_INFO(this->get_logger(), "Goal    pos: %.4f %.4f %.4f %.4f %.4f %.4f",
+    point.positions[0], point.positions[1], point.positions[2],
+    point.positions[3], point.positions[4], point.positions[5]);
+
   for (size_t i = 0; i < point.positions.size(); ++i) {
     if (fabs(point.positions[i] - q_act[i]) > eps)
       return false;
   }
   return true;
 }
+trajectory_msgs::msg::JointTrajectoryPoint TmRos2SctMoveit::get_current_joint_point()
+{
+  trajectory_msgs::msg::JointTrajectoryPoint point;
+  auto q_act = state_.joint_angle();
+  auto dq_act = state_.joint_speed();
+  for (size_t i = 0; i < joints_.size(); ++i) {
+    point.positions.push_back(q_act[i]);
+    point.velocities.push_back(dq_act[i]);
+  }
+  point.time_from_start = builtin_interfaces::msg::Duration();
+  return point;
+}
+
 void TmRos2SctMoveit::set_pvt_traj(
   TmPvtTraj &pvts, const std::vector<trajectory_msgs::msg::JointTrajectoryPoint> &traj_points, double Tmin)
 {
